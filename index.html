@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repute | Free Review Request Generator for Local Businesses</title>
+  <meta name="description" content="Repute — generate perfect Google review request messages in seconds. Free tool for local businesses. No account needed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #08100f;
+      --bg-mid: #0d1a18;
+      --bg-light: #132320;
+      --border: rgba(255,255,255,0.07);
+      --green: #10b981;
+      --green-light: #34d399;
+      --green-glow: rgba(16,185,129,0.12);
+      --green-deep: #059669;
+      --white: #ffffff;
+      --white-soft: rgba(255,255,255,0.7);
+      --white-muted: rgba(255,255,255,0.35);
+      --gold: #f59e0b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    ::selection { background: var(--green); color: white; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.3); border-radius: 10px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; left: 0; width: 100%; z-index: 1000;
+      padding: 1rem 5%;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      background: rgba(8,16,15,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .nav-logo-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; font-weight: 500; color: white;
+    }
+    .nav-logo-text { font-size: 1.1rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+    .nav-logo-text span { color: var(--green); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-badge { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); background: var(--green-glow); border: 1px solid rgba(16,185,129,0.2); padding: 0.25rem 0.6rem; border-radius: 50px; white-space: nowrap; }
+    .nav-link { color: var(--white-soft); text-decoration: none; font-size: 0.85rem; transition: color 0.2s ease; white-space: nowrap; }
+    .nav-link:hover { color: var(--white); }
+
+    /* HERO */
+    .hero {
+      padding: 4.5rem 5% 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%; left: 50%; transform: translateX(-50%);
+      width: min(500px, 100vw); height: min(500px, 100vw);
+      background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--green-light);
+      background: var(--green-glow);
+      border: 1px solid rgba(16,185,129,0.2);
+      padding: 0.35rem 0.9rem; border-radius: 50px;
+      margin-bottom: 1.6rem;
+    }
+    .hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 2s ease-in-out infinite; flex-shrink: 0; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 700; line-height: 1.1;
+      letter-spacing: -0.03em; color: var(--white);
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 span { color: var(--green); }
+    .hero-sub { font-size: 1rem; color: var(--white-soft); max-width: 500px; margin: 0 auto 2rem; font-weight: 400; line-height: 1.65; }
+
+    /* STATS */
+    .stats-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 2.5rem; flex-wrap: wrap; margin-bottom: 2.5rem;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 500; color: var(--green-light); }
+    .stat-label { font-size: 0.73rem; color: var(--white-muted); margin-top: 0.15rem; }
+
+    /* GOOGLE STARS DEMO */
+    .stars-demo {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--bg-mid); border: 1px solid var(--border);
+      border-radius: 50px; padding: 0.5rem 1.2rem;
+      margin-bottom: 3rem;
+    }
+    .stars { color: var(--gold); font-size: 1rem; letter-spacing: 0.05em; }
+    .stars-text { font-size: 0.8rem; color: var(--white-soft); }
+
+    /* MAIN APP */
+    .app-wrap {
+      max-width: 1060px; margin: 0 auto;
+      padding: 0 5% 5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* PANELS */
+    .panel {
+      background: var(--bg-mid);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      width: 100%;
+      min-width: 0;
+    }
+    .panel-sticky { position: sticky; top: 80px; }
+    .panel-header {
+      padding: 1.1rem 1.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .panel-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .panel-dot-green { background: var(--green); }
+    .panel-dot-gold { background: var(--gold); animation: blink 2s ease-in-out infinite; }
+    .panel-title { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--white-soft); }
+    .panel-body { padding: 1.6rem; width: 100%; box-sizing: border-box; }
+
+    /* FORM */
+    .form-section { margin-bottom: 1.6rem; }
+    .form-section-label {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--green-light); margin-bottom: 0.9rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .form-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .form-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.85rem; width: 100%; }
+    .form-field label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--white-muted); }
+    .form-field input, .form-field select, .form-field textarea {
+      background: var(--bg-light); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.72rem 0.9rem;
+      color: var(--white); font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; outline: none;
+      transition: border-color 0.2s ease;
+      -webkit-appearance: none;
+      width: 100%; min-width: 0; box-sizing: border-box;
+    }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: rgba(16,185,129,0.5); }
+    .form-field input::placeholder, .form-field textarea::placeholder { color: var(--white-muted); }
+    .form-field select option { background: var(--bg-mid); }
+    .form-field textarea { resize: vertical; min-height: 70px; }
+    .form-hint { font-size: 0.72rem; color: var(--white-muted); margin-top: 0.25rem; line-height: 1.4; }
+
+    /* CHANNEL SELECTOR */
+    .channel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .channel-btn {
+      padding: 0.7rem 0.5rem;
+      background: var(--bg-light); border: 1px solid var(--border);
+      border-radius: 8px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+    .channel-btn:hover { border-color: rgba(16,185,129,0.3); }
+    .channel-btn.active { border-color: var(--green); background: var(--green-glow); }
+    .channel-icon { font-size: 1.3rem; }
+    .channel-label { font-size: 0.7rem; font-weight: 500; color: var(--white-soft); }
+    .channel-btn.active .channel-label { color: var(--green-light); }
+
+    /* TONE SELECTOR */
+    .tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .tone-btn {
+      padding: 0.6rem 0.9rem;
+      background: var(--bg-light); border: 1px solid var(--border);
+      border-radius: 6px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem;
+      color: var(--white-soft); text-align: center;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+    .tone-btn:hover { border-color: rgba(16,185,129,0.3); }
+    .tone-btn.active { border-color: var(--green); background: var(--green-glow); color: var(--green-light); font-weight: 500; }
+
+    /* GENERATE BTN */
+    .generate-btn {
+      width: 100%; padding: 0.95rem;
+      background: var(--green); color: white; border: none;
+      border-radius: 8px; font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; font-weight: 600;
+      cursor: pointer; transition: filter 0.2s ease, transform 0.2s ease;
+      margin-top: 0.5rem; box-sizing: border-box;
+    }
+    .generate-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    /* MESSAGE OUTPUT */
+    .output-empty {
+      padding: 3rem 1.6rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 1rem; color: var(--white-muted);
+      min-height: 320px;
+    }
+    .output-empty-icon { font-size: 2.5rem; opacity: 0.3; }
+    .output-empty-text { font-size: 0.85rem; line-height: 1.6; }
+
+    .output-content { display: none; padding: 1.6rem; }
+    .output-content.visible { display: block; }
+
+    .output-channel-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--green-light); background: var(--green-glow);
+      border: 1px solid rgba(16,185,129,0.2);
+      padding: 0.2rem 0.6rem; border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    .message-box {
+      background: var(--bg-light); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.4rem;
+      font-size: 0.9rem; color: var(--white-soft);
+      line-height: 1.7; margin-bottom: 1.2rem;
+      white-space: pre-wrap; word-break: break-word;
+      position: relative;
+    }
+
+    .output-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+    .action-btn {
+      width: 100%; padding: 0.85rem 1rem;
+      border-radius: 8px; border: none;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: filter 0.2s ease, transform 0.2s ease;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      box-sizing: border-box; text-decoration: none;
+    }
+    .action-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-whatsapp { background: #25d366; color: white; }
+    .btn-copy { background: var(--bg-light); color: var(--white-soft); border: 1px solid var(--border); }
+    .btn-copy:hover { color: var(--white); }
+    .btn-email { background: var(--green); color: white; }
+
+    .output-tip {
+      margin-top: 1.2rem; padding: 0.9rem 1rem;
+      background: var(--green-glow); border: 1px solid rgba(16,185,129,0.15);
+      border-radius: 8px; font-size: 0.8rem; color: var(--white-soft); line-height: 1.5;
+    }
+    .output-tip strong { color: var(--green-light); }
+
+    /* PRO TEASER */
+    .pro-teaser {
+      margin-top: 1.2rem; padding: 1rem;
+      background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15);
+      border-radius: 8px;
+    }
+    .pro-teaser-title { font-size: 0.75rem; font-weight: 600; color: var(--gold); margin-bottom: 0.4rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .pro-teaser-text { font-size: 0.78rem; color: var(--white-muted); line-height: 1.5; }
+    .pro-teaser-text a { color: var(--gold); text-decoration: none; }
+    .pro-teaser-text a:hover { text-decoration: underline; }
+
+    /* HOW IT WORKS */
+    .how {
+      max-width: 900px; margin: 0 auto;
+      padding: 3rem 5% 5rem; text-align: center;
+      width: 100%; box-sizing: border-box;
+    }
+    .how-tag { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-light); margin-bottom: 0.8rem; }
+    .how h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 2.5rem; }
+    .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; text-align: left; }
+    .how-card { background: var(--bg-mid); border: 1px solid var(--border); border-radius: 10px; padding: 1.6rem; }
+    .how-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--green); margin-bottom: 0.9rem; }
+    .how-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--white); margin-bottom: 0.4rem; }
+    .how-card p { font-size: 0.82rem; color: var(--white-muted); line-height: 1.6; }
+
+    /* FOOTER */
+    footer { background: var(--bg-mid); border-top: 1px solid var(--border); padding: 1.8rem 5%; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .footer-logo { font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+    .footer-logo span { color: var(--green); }
+    .footer-copy { font-size: 0.75rem; color: var(--white-muted); }
+    .footer-copy a { color: var(--green-light); text-decoration: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 720px) {
+      .app-wrap { grid-template-columns: 1fr; padding: 0 4% 4rem; overflow: hidden; }
+      .panel-sticky { position: static; }
+      .hero { padding: 3rem 4% 2rem; }
+      .how { padding: 2.5rem 4% 3.5rem; }
+      .how-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .channel-grid { grid-template-columns: repeat(3, 1fr); }
+      .stats-row { gap: 1.5rem; }
+      nav { padding: 0.9rem 4%; }
+      .panel { width: 100%; min-width: 0; }
+      .panel-body { padding: 1.2rem; }
+      .message-box { font-size: 0.85rem; padding: 1rem; }
+      .output-content { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-mark">R</div>
+      <span class="nav-logo-text">Repute<span>.</span></span>
+    </a>
+    <div class="nav-right">
+      <span class="nav-badge">Free Tool</span>
+      <a href="https://asiahaiderstudio.com" target="_blank" class="nav-link">By AH Studio</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag"><span class="hero-tag-dot"></span>Free — No Account Needed</div>
+    <h1>More Google reviews.<br><span>Less awkward asking.</span></h1>
+    <p class="hero-sub">Generate a perfectly worded review request message in seconds. Send it via WhatsApp, SMS or email — and watch your stars climb.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">10s</div>
+        <div class="stat-label">To generate a message</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3x</div>
+        <div class="stat-label">More reviews than asking verbally</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">Free</div>
+        <div class="stat-label">No sign up needed</div>
+      </div>
+    </div>
+    <div class="stars-demo">
+      <span class="stars">★★★★★</span>
+      <span class="stars-text">Your business, fully rated — starting today.</span>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="app-wrap">
+
+    <!-- FORM PANEL -->
+    <div class="panel panel-sticky">
+      <div class="panel-header">
+        <div class="panel-dot panel-dot-green"></div>
+        <span class="panel-title">Message Builder</span>
+      </div>
+      <div class="panel-body">
+
+        <div class="form-section">
+          <div class="form-section-label">Your Business</div>
+          <div class="form-field">
+            <label>Business Name</label>
+            <input type="text" id="biz-name" placeholder="e.g. Forge & Fix Plumbing" />
+          </div>
+          <div class="form-field">
+            <label>Your Google Review Link</label>
+            <input type="url" id="review-link" placeholder="https://g.page/r/your-business/review" />
+            <span class="form-hint">Find this in your Google Business Profile → Get more reviews</span>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">Customer Details</div>
+          <div class="form-field">
+            <label>Customer First Name</label>
+            <input type="text" id="customer-name" placeholder="e.g. Sarah" />
+          </div>
+          <div class="form-field">
+            <label>Job / Service Completed (optional)</label>
+            <input type="text" id="job-type" placeholder="e.g. boiler installation, haircut, website" />
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">Send Via</div>
+          <div class="channel-grid">
+            <button class="channel-btn active" data-channel="whatsapp" onclick="selectChannel(this)">
+              <span class="channel-icon">💬</span>
+              <span class="channel-label">WhatsApp</span>
+            </button>
+            <button class="channel-btn" data-channel="sms" onclick="selectChannel(this)">
+              <span class="channel-icon">📱</span>
+              <span class="channel-label">SMS</span>
+            </button>
+            <button class="channel-btn" data-channel="email" onclick="selectChannel(this)">
+              <span class="channel-icon">✉️</span>
+              <span class="channel-label">Email</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">Message Tone</div>
+          <div class="tone-grid">
+            <button class="tone-btn active" data-tone="friendly" onclick="selectTone(this)">Friendly</button>
+            <button class="tone-btn" data-tone="professional" onclick="selectTone(this)">Professional</button>
+            <button class="tone-btn" data-tone="brief" onclick="selectTone(this)">Brief & Direct</button>
+            <button class="tone-btn" data-tone="warm" onclick="selectTone(this)">Warm & Personal</button>
+          </div>
+        </div>
+
+        <button class="generate-btn" onclick="generateMessage()">Generate Message</button>
+
+      </div>
+    </div>
+
+    <!-- OUTPUT PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-dot panel-dot-gold"></div>
+        <span class="panel-title">Your Message</span>
+      </div>
+
+      <div class="output-empty" id="output-empty">
+        <div class="output-empty-icon">⭐</div>
+        <div class="output-empty-text">Fill in your details and hit<br><strong style="color:var(--white-soft)">Generate Message</strong><br>to get your review request.</div>
+      </div>
+
+      <div class="output-content" id="output-content">
+        <div class="output-channel-badge" id="output-badge">WhatsApp</div>
+        <div class="message-box" id="message-box"></div>
+        <div class="output-actions" id="output-actions"></div>
+        <div class="output-tip">
+          <strong>Pro tip:</strong> Send this within 24 hours of completing the job — response rates are 3x higher when the experience is fresh.
+        </div>
+        <div class="pro-teaser">
+          <div class="pro-teaser-title">⚡ Coming Soon — Repute Pro</div>
+          <div class="pro-teaser-text">Automated review requests, SMS integration, customer database and response tracking. <a href="https://asiahaiderstudio.com#contact" target="_blank">Join the waitlist →</a></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how">
+    <div class="how-tag">How It Works</div>
+    <h2>Three steps to more Google stars.</h2>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">01 —</div>
+        <h3>Add your details</h3>
+        <p>Enter your business name, your Google review link, and the customer's name. Takes under 30 seconds.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">02 —</div>
+        <h3>Generate the message</h3>
+        <p>Choose your channel and tone, then hit Generate. Repute writes a personalised review request that doesn't sound robotic.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">03 —</div>
+        <h3>Send and collect</h3>
+        <p>Hit Send via WhatsApp or copy and paste. Your customer gets a direct link to leave you a Google review in one tap.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Repute<span>.</span></div>
+      <p class="footer-copy">A free tool by <a href="https://asiahaiderstudio.com" target="_blank">AH Studio</a> — Newcastle upon Tyne. Need a website? <a href="https://asiahaiderstudio.com" target="_blank">Let's talk.</a></p>
+    </div>
+  </footer>
+
+  <script>
+    let selectedChannel = 'whatsapp';
+    let selectedTone = 'friendly';
+
+    function selectChannel(btn) {
+      document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedChannel = btn.dataset.channel;
+    }
+
+    function selectTone(btn) {
+      document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTone = btn.dataset.tone;
+    }
+
+    function buildMessage(bizName, customerName, jobType, reviewLink, channel, tone) {
+      const job = jobType ? `your ${jobType}` : 'the work';
+      const link = reviewLink || '[your Google review link]';
+
+      const messages = {
+        friendly: {
+          whatsapp: `Hi ${customerName}! 👋\n\nReally hope you're happy with ${job} — it was great working with you.\n\nIf you've got a spare minute, it would mean a lot if you could leave us a quick Google review. It really helps small businesses like ours:\n\n${link}\n\nThanks so much — ${bizName} 🙏`,
+          sms: `Hi ${customerName}, it's ${bizName}. Hope you're happy with ${job}! If you have a moment, a Google review would really help us out: ${link} — Thanks so much!`,
+          email: `Hi ${customerName},\n\nThank you so much for choosing ${bizName}. We really hope you're pleased with ${job}.\n\nIf you have a spare moment, we'd be incredibly grateful if you could leave us a quick Google review — it makes a huge difference to a small business:\n\n${link}\n\nThank you for your support!\n\nWarm regards,\n${bizName}`
+        },
+        professional: {
+          whatsapp: `Hi ${customerName},\n\nThank you for choosing ${bizName}. We hope you're satisfied with ${job}.\n\nIf you're happy with our service, we'd really appreciate it if you could share your experience via a Google review:\n\n${link}\n\nYour feedback helps us continue to improve. Thank you — ${bizName}`,
+          sms: `Hi ${customerName}, thank you for using ${bizName}. If you're satisfied with ${job}, please consider leaving a Google review: ${link}. It really helps our business. Thank you.`,
+          email: `Dear ${customerName},\n\nThank you for choosing ${bizName}. We trust you are satisfied with ${job} and hope the experience met your expectations.\n\nWe would be grateful if you could take a moment to share your feedback via Google Reviews:\n\n${link}\n\nYour review helps others in the local area find reliable services.\n\nKind regards,\n${bizName}`
+        },
+        brief: {
+          whatsapp: `Hi ${customerName} — ${bizName} here. Quick favour: could you leave us a Google review? Takes 30 seconds and really helps us out. Link here: ${link} — Thanks!`,
+          sms: `Hi ${customerName}, ${bizName} here. Mind leaving us a quick Google review? ${link} — Only takes a minute, means a lot. Thanks!`,
+          email: `Hi ${customerName},\n\nWould you mind leaving us a quick Google review? It only takes a minute:\n\n${link}\n\nThanks!\n${bizName}`
+        },
+        warm: {
+          whatsapp: `Hi ${customerName} 😊\n\nIt was honestly a pleasure working with you on ${job}. Customers like you are the reason we love what we do.\n\nOne small thing — if you had a good experience, would you mind sharing it on Google? It really does make a difference to us:\n\n${link}\n\nNo pressure at all — but thank you either way. Take care! ${bizName} ❤️`,
+          sms: `Hi ${customerName}, it was a real pleasure working with you! If you'd like to share your experience, here's our Google review link: ${link} — it genuinely means the world to us. Thank you! ${bizName}`,
+          email: `Dear ${customerName},\n\nIt was truly a pleasure working with you on ${job}. Customers like you make what we do worthwhile.\n\nIf you had a positive experience and feel comfortable sharing it, we'd be so grateful for a Google review:\n\n${link}\n\nEven a sentence or two makes a real difference to a local business like ours.\n\nWith thanks and warm regards,\n${bizName}`
+        }
+      };
+
+      return messages[tone][channel];
+    }
+
+    function generateMessage() {
+      const bizName = document.getElementById('biz-name').value.trim() || 'Our Business';
+      const reviewLink = document.getElementById('review-link').value.trim();
+      const customerName = document.getElementById('customer-name').value.trim() || 'there';
+      const jobType = document.getElementById('job-type').value.trim();
+
+      const message = buildMessage(bizName, customerName, jobType, reviewLink, selectedChannel, selectedTone);
+
+      document.getElementById('output-empty').style.display = 'none';
+
+      const badges = { whatsapp: '💬 WhatsApp', sms: '📱 SMS', email: '✉️ Email' };
+      document.getElementById('output-badge').textContent = badges[selectedChannel];
+      document.getElementById('message-box').textContent = message;
+
+      const actionsEl = document.getElementById('output-actions');
+      actionsEl.innerHTML = '';
+
+      if (selectedChannel === 'whatsapp') {
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        const waBtn = document.createElement('a');
+        waBtn.href = waUrl;
+        waBtn.target = '_blank';
+        waBtn.rel = 'noopener noreferrer';
+        waBtn.className = 'action-btn btn-whatsapp';
+        waBtn.innerHTML = '💬 Open in WhatsApp';
+        actionsEl.appendChild(waBtn);
+      }
+
+      if (selectedChannel === 'email') {
+        const subject = encodeURIComponent(`A quick favour from ${bizName}`);
+        const body = encodeURIComponent(message);
+        const mailBtn = document.createElement('a');
+        mailBtn.href = `mailto:?subject=${subject}&body=${body}`;
+        mailBtn.className = 'action-btn btn-email';
+        mailBtn.innerHTML = '✉️ Open in Email';
+        actionsEl.appendChild(mailBtn);
+      }
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'action-btn btn-copy';
+      copyBtn.innerHTML = 'Copy Message';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(message).then(() => {
+          copyBtn.textContent = '✓ Copied!';
+          setTimeout(() => copyBtn.innerHTML = 'Copy Message', 2000);
+        });
+      };
+      actionsEl.appendChild(copyBtn);
+
+      document.getElementById('output-content').classList.add('visible');
+    }
+  </script>
+</body>
+</html>
